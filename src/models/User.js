@@ -1,18 +1,17 @@
-import express from 'express';
-import { getOrders, getOrderById, createOrder, deleteOrder } from '../controllers/orderController.js';
+import db from "../config/db.js";
 
-const router = express.Router();
+const User = {
+  create: (name, email, password, role, callback) => {
+    db.query(
+      "INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, ?)",
+      [name, email, password, role],
+      callback
+    );
+  },
 
-// Get all orders
-router.get('/', getOrders);
+  findById: (id, callback) => {
+    db.query("SELECT * FROM Users WHERE id = ?", [id], callback);
+  }
+};
 
-// Get a specific order by ID
-router.get('/:orderId', getOrderById);
-
-// Create a new order
-router.post('/', createOrder);
-
-// Delete an order
-router.delete('/:orderId', deleteOrder);
-
-export default router;
+export default User;
