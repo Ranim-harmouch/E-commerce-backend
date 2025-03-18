@@ -12,9 +12,8 @@ const connection = await mysql.createConnection({
   port: process.env.DB_PORT
 });
 
-// You can test the connection using a simple query
 try {
-  await connection.query('SELECT 1'); // A simple query to check if the connection is successful
+  await connection.query('SELECT 1');
   console.log('✅ Connected to MySQL database!');
 } catch (err) {
   console.error('❌ Database connection failed:', err);
