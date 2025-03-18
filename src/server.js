@@ -5,8 +5,6 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-import { verifyToken } from "./middleware/authMiddleware.js";
-import { getMe } from './controllers/authController.js';
 
 dotenv.config();
 
@@ -26,7 +24,7 @@ app.use(
 app.get('/', (req, res) => {
   res.send('🚀 Backend is running!');
 });
-app.get("/users/me", verifyToken, getMe);
+
 app.use("/users", authRoutes);
 app.use("/admin", userRoutes);
 

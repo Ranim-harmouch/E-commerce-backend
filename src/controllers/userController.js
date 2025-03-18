@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 export const getUsers = async (req, res) => {
     try {
         const [users] = await db.query('SELECT * FROM Users');
-        res.json(users);
+        res.json({users});
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -47,13 +47,13 @@ export const updateUser = async (req, res) => {
     const { id } = req.params;
     const { name, email, password, role } = req.body;
 
-    let updatedFields = { name, email, role };
+    let updatedFields = { name, email, password, role };
 
     try {
-        if (password && password !== "*****") {
+        /*if (password && password !== "*****") {
             const hashedPassword = await bcrypt.hash(password, 10);
             updatedFields.password = hashedPassword;
-        }
+        }*/
 
         await db.query("UPDATE Users SET ? WHERE id = ?", [updatedFields, id]);
 

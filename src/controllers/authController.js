@@ -5,16 +5,16 @@ import connection from '../config/db.js'
 export const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
 
-    // Check if the email already exists in the database
-    const [existingUser] = await connection.query('SELECT email FROM Users WHERE email = ?', [email]);
-    if (existingUser.length > 0) {
-        return res.status(400).json({ error: 'Email already in use' });
-    }
-
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Check if the email already exists in the database
+    const [existingUser] = await connection.query('SELECT email FROM Users WHERE email = ?', [email]);
+    if (existingUser.length > 0) {
+        return res.status(400).json({ error: 'Email already in use' });
     }
 
     // Hash the password
@@ -35,7 +35,12 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
     const { email, password } = req.body;
-
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+    }
     // Find the user by email
     const [users] = await connection.query('SELECT id, email, password, role FROM Users WHERE email = ?', [email]);
     if (users.length === 0) {
