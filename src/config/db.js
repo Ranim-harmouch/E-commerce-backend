@@ -2,27 +2,30 @@
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
 
-// Load environment variables from .env file
 dotenv.config();
 
-// Create a connection to the MySQL database using environment variables
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,       // Database host
-  user: process.env.DB_USER,       // Database username
-  password: process.env.DB_PASSWORD, // Database password
-  database: process.env.DB_NAME,    // Database name
-  port: process.env.DB_PORT         // Database port (default is 3306)
+// Create a connection pool
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+  waitForConnections: true,
+  connectionLimit: 10, // Number of connections in the pool
+  queueLimit: 0
 });
 
-// Connect to the database
-connection.connect((err) => {
+// Test database connection
+pool.getConnection((err, connection) => {
   if (err) {
     console.error('❌ Database connection failed:', err);
-    return;
+  } else {
+    console.log('✅ Connected to MySQL database!');
+    connection.release(); // Release connection back to the pool
   }
-  console.log('✅ Connected to MySQL database!');
 });
 
-// Export the connection for use in other files
-export default connection;
+// Export the pool for queries
+export default pool;
 
