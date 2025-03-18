@@ -1,4 +1,4 @@
-import connection from '../config/db.js'; // Ensure correct path
+import connection from '../config/db.js'; 
 
 const Images = {
     create: async (url, product_id) => {

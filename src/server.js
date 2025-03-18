@@ -45,7 +45,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Debug: Log environment variables
 console.log('Using database host:', process.env.DB_HOST);
 
 app.use('/api/products', productRoutes);
