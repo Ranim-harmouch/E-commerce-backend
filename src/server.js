@@ -3,10 +3,10 @@ import dotenv from 'dotenv';
 import db from './config/db.js'; 
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
 import { verifyToken } from "./middleware/authMiddleware.js";
-import { getMe } from './controllers/userController.js';
+import { getMe } from './controllers/authController.js';
 
 dotenv.config();
 
@@ -27,8 +27,8 @@ app.get('/', (req, res) => {
   res.send('🚀 Backend is running!');
 });
 app.get("/users/me", verifyToken, getMe);
-app.use("/users", userRoutes);
-app.use("/admin", adminRoutes);
+app.use("/users", authRoutes);
+app.use("/admin", userRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

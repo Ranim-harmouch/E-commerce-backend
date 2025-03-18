@@ -1,12 +1,12 @@
 import express from 'express';
-import { registerUser, loginUser, logoutUser } from "../controllers/userController.js"; 
+import { getUsers, deleteUser, updateUser} from '../controllers/userController.js';
+import { verifyToken, checkRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Define routes
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.post("/logout", logoutUser);
+// Only super admins can access these admin-related routes
+router.get('/', verifyToken, checkRole(['super_admin']), getUsers);
+router.put('/:id', verifyToken, checkRole(['super_admin']), updateUser);
+router.delete('/:id', verifyToken, checkRole(['super_admin']), deleteUser);
 
-// Export the router so it can be used in your main server file
 export default router;

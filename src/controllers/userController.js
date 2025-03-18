@@ -1,97 +1,64 @@
+import db from '../config/db.js';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import connection from '../config/db.js'
 
-export const registerUser = async (req, res) => {
-    const { name, email, password } = req.body;
-
-    // Check if the email already exists in the database
-    const [existingUser] = await connection.query('SELECT email FROM Users WHERE email = ?', [email]);
-    if (existingUser.length > 0) {
-        return res.status(400).json({ error: 'Email already in use' });
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: 'Invalid email format' });
-    }
-
-    // Hash the password
-    /*const hashedPassword = await bcrypt.hash(password, 10);*/
-
-    // Insert new user into the Users table
+export const getUsers = async (req, res) => {
     try {
-        const [result] = await connection.query(
-            'INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, ?)', 
-            [name, email, password, 'user'] // Set default role to 'user'
-        );
-        res.json({ message: 'User registered successfully' });
+        const [users] = await db.query('SELECT * FROM Users');
+        res.json(users);
     } catch (error) {
-        console.error('Error during signup:', error);
-        res.status(500).json({ error: 'An error occurred during registration' });
+        res.status(500).json({ error: error.message });
     }
 };
 
-export const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+export const deleteUser = async (req, res) => {
+    const { id } = req.params;
 
-    // Find the user by email
-    const [users] = await connection.query('SELECT id, email, password, role FROM Users WHERE email = ?', [email]);
-    if (users.length === 0) {
-        return res.status(400).json({ error: 'This user does not exist' });
-    }
-    const user = users[0];
-
-    // Compare the entered password with the hashed password in the database
-    /*const validPass = await bcrypt.compare(password, user.password);
-    if (!validPass) {
-        return res.status(400).json({ error: 'Incorrect password' });
-    }*/
-   if(!(password === user.password)){
-    return res.status(400).json({ error: 'Incorrect password' });
-   }
-
-    // Generate JWT token
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-    const cookieOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies only in production
-        sameSite: 'Lax',
-        maxAge: 3600000, // 1 hour
-    };
-
-    // Set token in cookie
-    res.cookie("token", token, cookieOptions);
-    res.json({ message: "Login successful",token });
-};
-
-export const logoutUser = (req, res) => {
-    const cookieOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Secure cookies only in production
-        sameSite: 'Lax',
-    };
-
-    res.clearCookie("token", cookieOptions);
-    res.json({ message: "Logged out successfully" });
-};
-
-export const getMe = async (req, res) => {
     try {
-        const { id } = req.user; // Assuming the JWT token contains the user ID
+        // Check if user has pending orders
+        const [pendingOrders] = await db.query(
+            "SELECT COUNT(*) AS count FROM Orders WHERE id = ? AND status IN ('pending', 'processing', 'shipped')",
+            [id]
+        );
 
-        // Fetch user details by ID
-        const [userData] = await connection.query('SELECT id, name, email, role FROM Users WHERE id = ?', [id]);
-
-        if (userData.length === 0) {
-            return res.status(500).json({ error: 'User not found' });
+        if (pendingOrders[0].count > 0) {
+            return res.status(400).json({ error: "Cannot delete user. They have pending orders." });
         }
 
-        res.json(userData[0]);
+        // Check if user has product reviews or comments
+        const [userReviews] = await db.query(
+            "SELECT COUNT(*) AS count FROM Review WHERE user_id = ?",
+            [id]
+        );
+
+        if (userReviews[0].count > 0) {
+            return res.status(400).json({ error: "Cannot delete user. They have posted reviews or comments." });
+        }
+
+        // Proceed with user deletion
+        await db.query("DELETE FROM Users WHERE id = ?", [id]);
+
+        res.json({ message: "User deleted successfully" });
     } catch (error) {
-        console.error('Error in getMe:', error);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const updateUser = async (req, res) => {
+    const { id } = req.params;
+    const { name, email, password, role } = req.body;
+
+    let updatedFields = { name, email, role };
+
+    try {
+        if (password && password !== "*****") {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            updatedFields.password = hashedPassword;
+        }
+
+        await db.query("UPDATE Users SET ? WHERE id = ?", [updatedFields, id]);
+
+        res.json({ message: "User updated successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 };
