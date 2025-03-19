@@ -1,14 +1,39 @@
 
-
+import axios from "axios";
+import multer from "multer";
 import Product from "../models/Product.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// Configure multer for file uploads
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+export const uploadMiddleware = upload.single("image"); 
+
+// Upload image to ImgBB
+const uploadImageToImgBB = async (file) => {
+    // const apiKey = process.env.IMGBB_API_KEY; 
+    const apiKey = "071dba246e9cfff043b604ae182ffaf8";
+    const formData = new FormData();
+    formData.append("image", file.buffer.toString("base64"));
+
+    try {
+        const response = await axios.post(`https://api.imgbb.com/1/upload?key=${apiKey}`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+        return response.data.data.url; // Return the uploaded image URL
+    } catch (error) {
+        throw new Error("Image upload failed");
+    }
+};
 
 // Get all products
 export const getAllProducts = async (req, res) => {
     try {
         const products = await Product.getAll();
-
         if (!Array.isArray(products)) {
-            throw new Error("Unexpected database response format"); // Error check
+            throw new Error("Unexpected database response format");
         }
 
         res.status(200).json({
@@ -32,7 +57,7 @@ export const getProductById = async (req, res) => {
         const { id } = req.params;
         console.log("Fetching product with ID:", id); 
         
-        const product = await Product.getById(req.params.id);
+        const product = await Product.getById(id);
         if (!product) {
             return res.status(404).json({
                 data: null,
@@ -67,7 +92,12 @@ export const addProduct = async (req, res) => {
             });
         }
 
-        const newProduct = await Product.create(name, description, price, stock, category_id);
+        let imageUrl = null;
+        if (req.file) {
+            imageUrl = await uploadImageToImgBB(req.file);
+        }
+
+        const newProduct = await Product.create(name, description, price, stock, category_id, imageUrl);
         res.status(201).json({
             data: newProduct,
             message: "Product added successfully",

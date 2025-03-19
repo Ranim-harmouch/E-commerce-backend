@@ -4,22 +4,22 @@ import connection from "../config/db.js";
 
 const Product = {
     // Create a new product
-    create: async (name, description, price, stock, category_id) => {
+    create: async (name, description, price, stock, category_id, image_url) => {
         const query = `
-            INSERT INTO Products (name, description, price, stock, category_id, created_at) 
+            INSERT INTO Products (name, description, price, stock, category_id, image_url, created_at) 
             VALUES (?, ?, ?, ?, ?, NOW())
         `;
-        const [result] = await connection.execute(query, [name, description, price, stock, category_id]);
-        return { id: result.insertId, name, description, price, stock, category_id };
+        const [result] = await connection.execute(query, [name, description, price, stock, category_id, image_url]);
+        return { id: result.insertId, name, description, price, stock, category_id, image_url };
     },
 
     // Get all products
     getAll: async () => {
         const query = `SELECT * FROM Products`;
         const [rows] = await connection.execute(query); //  Extract only rows
-        if (!Array.isArray(rows)) {
-            throw new Error("Database response is not an array");
-        }
+        // if (!Array.isArray(rows)) {
+        //     throw new Error("Database response is not an array");
+        // }
         return rows; // Return the actual product list
     },
 
