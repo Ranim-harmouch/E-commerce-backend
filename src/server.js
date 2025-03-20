@@ -1,19 +1,25 @@
 import express from "express";
 import cors from "cors";
-import bodyParser from "body-parser";
 import orderRoutes from "./routes/orderRoutes.js"; 
+import brandRoutes from './routes/brandRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
 
+dotenv.config();
+const PORT = process.env.PORT || 5000;
 const app = express();
-const PORT = 5000;
 
 app.use(cors());
-app.use(bodyParser.json()); 
+app.use(express.json());
+
+
+app.get("/health", (_, res) => {
+  res.send("Still alive!");
+});
 
 app.use("/api/orders", orderRoutes); 
+app.use('/api/brands', brandRoutes);
+app.use('/api/reviews', reviewRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Orders API is running...");
-});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
