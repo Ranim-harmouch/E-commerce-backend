@@ -27,4 +27,5 @@ pool.getConnection((err, connection) => {
 });
 
 // Export the pool for queries
+
 export default pool;
