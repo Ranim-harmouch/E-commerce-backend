@@ -4,7 +4,7 @@ import { createOrder, getAllOrders, getOrdersByUser, getOrderById, deleteOrder }
 const router = express.Router();
 
 router.post("/", createOrder); 
-router.get("/", getAllOrders); 
+router.get("/", getAllOrders); // this route is for admin only
 router.get("/user/:user_id", getOrdersByUser); 
 router.get("/:id/user/:user_id", getOrderById); 
 router.delete("/:id", deleteOrder); 
