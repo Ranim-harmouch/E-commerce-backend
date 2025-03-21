@@ -1,57 +1,68 @@
 
-
 import connection from "../config/db.js"; 
 
 const Product = {
     // Create a new product
-    create: async (name, description, price, stock, category_id, image_url) => {
+    create: (name, description, price, stock, category_id, image_url, callback) => {
         const query = `
             INSERT INTO Products (name, description, price, stock, category_id, image_url, created_at) 
-            VALUES (?, ?, ?, ?, ?, NOW())
+            VALUES (?, ?, ?, ?, ?, ?, NOW())
         `;
-        const [result] = await connection.execute(query, [name, description, price, stock, category_id, image_url]);
-        return { id: result.insertId, name, description, price, stock, category_id, image_url };
+        connection.query(query, [name, description, price, stock, category_id, image_url], (error, result) => {
+            if (error) {
+                return callback(error, null);
+            }
+            callback(null, { id: result.insertId, name, description, price, stock, category_id, image_url });
+        });
     },
 
     // Get all products
-    getAll: async () => {
+    getAll: (callback) => {
         const query = `SELECT * FROM Products`;
-        const [rows] = await connection.execute(query); //  Extract only rows
-        // if (!Array.isArray(rows)) {
-        //     throw new Error("Database response is not an array");
-        // }
-        return rows; // Return the actual product list
+        connection.query(query, (error, rows) => {
+            if (error) {
+                return callback(error, null);
+            }
+            callback(null, rows);
+        });
     },
 
     // Get a single product by ID
-    getById: async (id) => {
+    getById: (id, callback) => {
         const query = `SELECT * FROM Products WHERE id = ?`;
-        const [rows] = await connection.execute(query, [id]);
-        return rows.length > 0 ? rows[0] : null; // Ensure correct return type
+        connection.query(query, [id], (error, rows) => {
+            if (error) {
+                return callback(error, null);
+            }
+            callback(null, rows.length > 0 ? rows[0] : null);
+        });
     },
 
     // Update a product by ID
-    update: async (id, name, description, price, stock, category_id) => {
+    update: (id, name, description, price, stock, category_id, callback) => {
         const query = `
             UPDATE Products 
             SET name = ?, description = ?, price = ?, stock = ?, category_id = ?, updated_at = NOW()
             WHERE id = ?
         `;
-        const [result] = await connection.execute(query, [name, description, price, stock, category_id, id]);
-        return result.affectedRows > 0;
+        connection.query(query, [name, description, price, stock, category_id, id], (error, result) => {
+            if (error) {
+                return callback(error, null);
+            }
+            callback(null, result.affectedRows > 0);
+        });
     },
 
     // Delete a product by ID
-    delete: async (id) => {
+    delete: (id, callback) => {
         const query = `DELETE FROM Products WHERE id = ?`;
-        const [result] = await connection.execute(query, [id]);
-        return result.affectedRows > 0;
+        connection.query(query, [id], (error, result) => {
+            if (error) {
+                return callback(error, null);
+            }
+            callback(null, result.affectedRows > 0);
+        });
     }
 };
 
 export default Product;
-
-
-
-
-
