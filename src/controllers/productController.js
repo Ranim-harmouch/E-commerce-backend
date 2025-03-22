@@ -81,8 +81,8 @@ export const getProductById = (req, res) => {
 
 // Add a new product
 export const addProduct = (req, res) => {
-    const { name, description, price, stock, category_id } = req.body;
-    if (!name || !price || !stock || !category_id) {
+    const { name, description, price, quantity, color, discount, category_id } = req.body;
+    if (!name || !price || !quantity|| !color|| !discount || !category_id) {
         return res.status(400).json({
             data: null,
             message: "All required fields must be provided",
@@ -102,7 +102,7 @@ export const addProduct = (req, res) => {
             }
             imageUrl = url;
 
-            Product.create(name, description, price, stock, category_id, imageUrl, (error, newProduct) => {
+            Product.create(name, description, price, quantity, color, discount, category_id, imageUrl, (error, newProduct) => {
                 if (error) {
                     console.error("Error adding product:", error);
                     return res.status(500).json({
@@ -120,7 +120,7 @@ export const addProduct = (req, res) => {
             });
         });
     } else {
-        Product.create(name, description, price, stock, category_id, imageUrl, (error, newProduct) => {
+        Product.create(name, description, price, quantity, color, discount, category_id, imageUrl, (error, newProduct) => {
             if (error) {
                 console.error("Error adding product:", error);
                 return res.status(500).json({
@@ -141,10 +141,10 @@ export const addProduct = (req, res) => {
 
 // Update a product by ID
 export const updateProduct = (req, res) => {
-    const { name, description, price, stock, category_id } = req.body;
+    const { name, description, price, quantity, color, discount, category_id } = req.body;
     const { id } = req.params;
 
-    Product.update(id, name, description, price, stock, category_id, (error, success) => {
+    Product.update(id, name, description, price, quantity, color, discount, category_id, (error, success) => {
         if (error) {
             console.error("Error updating product:", error);
             return res.status(500).json({

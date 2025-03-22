@@ -3,16 +3,16 @@ import connection from "../config/db.js";
 
 const Product = {
     // Create a new product
-    create: (name, description, price, stock, category_id, image_url, callback) => {
+    create: (name, description, price, quantity, color, discount, category_id, image_url, callback) => {
         const query = `
-            INSERT INTO Products (name, description, price, stock, category_id, image_url, created_at) 
+            INSERT INTO Products (name, description, price, quantity, color, discount, category_id, image_url, created_at) 
             VALUES (?, ?, ?, ?, ?, ?, NOW())
         `;
-        connection.query(query, [name, description, price, stock, category_id, image_url], (error, result) => {
+        connection.query(query, [name, description, price, quantity, color, discount, category_id, image_url], (error, result) => {
             if (error) {
                 return callback(error, null);
             }
-            callback(null, { id: result.insertId, name, description, price, stock, category_id, image_url });
+            callback(null, { id: result.insertId, name, description, price, quantity, color, discount, category_id, image_url });
         });
     },
 
@@ -39,13 +39,13 @@ const Product = {
     },
 
     // Update a product by ID
-    update: (id, name, description, price, stock, category_id, callback) => {
+    update: (id, name, description, price, quantity, color, discount, category_id, callback) => {
         const query = `
             UPDATE Products 
-            SET name = ?, description = ?, price = ?, stock = ?, category_id = ?, updated_at = NOW()
+            SET name = ?, description = ?, price = ?, quantity = ?, color = ?, discount = ?, category_id = ?, updated_at = NOW()
             WHERE id = ?
         `;
-        connection.query(query, [name, description, price, stock, category_id, id], (error, result) => {
+        connection.query(query, [name, description, price, quantity, color, discount, category_id, id], (error, result) => {
             if (error) {
                 return callback(error, null);
             }
