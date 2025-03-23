@@ -51,9 +51,9 @@ export const getAllProducts = (req, res) => {
 
 // Get a single product by ID
 export const getProductById = (req, res) => {
-    const { id } = req.params;
+    const productId = req.params.id;
 
-    Product.getById(id, (error, product) => {
+    Product.getById(productId, (error, product) => {
         if (error) {
             console.error("Error fetching product:", error);
             return res.status(500).json({
@@ -80,9 +80,11 @@ export const getProductById = (req, res) => {
 };
 
 // Add a new product
+
 export const addProduct = (req, res) => {
-    const { name, description, price, quantity, color, discount, category_id } = req.body;
-    if (!name || !price || !quantity|| !color|| !discount || !category_id) {
+    const { name, brandId, description, quantity, price, color, discount, isNew, category } = req.body;
+
+    if (!name || !brandId || !price || !quantity || !color || discount === undefined || isNew === undefined || !category) {
         return res.status(400).json({
             data: null,
             message: "All required fields must be provided",
@@ -102,7 +104,7 @@ export const addProduct = (req, res) => {
             }
             imageUrl = url;
 
-            Product.create(name, description, price, quantity, color, discount, category_id, imageUrl, (error, newProduct) => {
+            Product.create(name, brandId, description, quantity, price, color, discount, isNew, category, imageUrl, (error, newProduct) => {
                 if (error) {
                     console.error("Error adding product:", error);
                     return res.status(500).json({
@@ -120,7 +122,7 @@ export const addProduct = (req, res) => {
             });
         });
     } else {
-        Product.create(name, description, price, quantity, color, discount, category_id, imageUrl, (error, newProduct) => {
+        Product.create(name, brandId, description, quantity, price, color, discount, isNew, category, imageUrl, (error, newProduct) => {
             if (error) {
                 console.error("Error adding product:", error);
                 return res.status(500).json({
@@ -139,12 +141,13 @@ export const addProduct = (req, res) => {
     }
 };
 
+
 // Update a product by ID
 export const updateProduct = (req, res) => {
-    const { name, description, price, quantity, color, discount, category_id } = req.body;
+    const { name, brandId, description, quantity, price, color, discount, isNew, category } = req.body;
     const { id } = req.params;
 
-    Product.update(id, name, description, price, quantity, color, discount, category_id, (error, success) => {
+    Product.update(name, brandId, description, quantity, price, color, discount, isNew, category, (error, success) => {
         if (error) {
             console.error("Error updating product:", error);
             return res.status(500).json({

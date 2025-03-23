@@ -3,18 +3,20 @@ import connection from "../config/db.js";
 
 const Product = {
     // Create a new product
-    create: (name, description, price, quantity, color, discount, category_id, image_url, callback) => {
+    
+    create: (name, brandId, description, quantity, price, color, discount, isNew, category, image_url, callback) => {
         const query = `
-            INSERT INTO Products (name, description, price, quantity, color, discount, category_id, image_url, created_at) 
-            VALUES (?, ?, ?, ?, ?, ?, NOW())
+            INSERT INTO Products (name, brandId, description, quantity, price, color, discount, isNew, category, image_url) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-        connection.query(query, [name, description, price, quantity, color, discount, category_id, image_url], (error, result) => {
+        connection.query(query, [name, brandId, description, quantity, price, color, discount, isNew, category, image_url], (error, result) => {
             if (error) {
                 return callback(error, null);
             }
-            callback(null, { id: result.insertId, name, description, price, quantity, color, discount, category_id, image_url });
+            callback(null, { id: result.insertId, name, brandId, description, quantity, price, color, discount, isNew, category, image_url });
         });
     },
+    
 
     // Get all products
     getAll: (callback) => {
@@ -39,13 +41,13 @@ const Product = {
     },
 
     // Update a product by ID
-    update: (id, name, description, price, quantity, color, discount, category_id, callback) => {
+    update: (name, brandId, description, quantity, price, color, discount, isNew, category, image_url, callback) => {
         const query = `
             UPDATE Products 
-            SET name = ?, description = ?, price = ?, quantity = ?, color = ?, discount = ?, category_id = ?, updated_at = NOW()
+            SET name = ?, brandId = ?, description = ?, quantity = ?,  price = ?, color = ?,isNew = ?, discount = ?, category = ?,image_url = ?, updated_at = NOW()
             WHERE id = ?
         `;
-        connection.query(query, [name, description, price, quantity, color, discount, category_id, id], (error, result) => {
+        connection.query(query, [name, brandId, description, quantity, price, color, discount, isNew, category, image_url], (error, result) => {
             if (error) {
                 return callback(error, null);
             }
