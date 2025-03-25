@@ -23,9 +23,9 @@ export const getAllBrands = (req, res) => {
   Brand.getAllBrands((err, results) => {
     if (err) {
       console.error('Error fetching brands:', err);
-      return res.status(500).json({ message: 'Error fetching brands' });
+      return res.status(500).json({ success: false, message: 'Error fetching brands' }); // Updated response
     }
-    res.status(200).json(results);
+    res.status(200).json({ success: true, data: results }); // Updated response
   });
 };
 
@@ -36,12 +36,12 @@ export const getBrandById = (req, res) => {
   Brand.getBrandById(id, (err, result) => {
     if (err) {
       console.error('Error fetching brand:', err);
-      return res.status(500).json({ message: 'Error fetching brand' });
+      return res.status(500).json({ success: false, message: 'Error fetching brand' }); // Updated response
     }
     if (!result.length) {
-      return res.status(404).json({ message: 'Brand not found' });
+      return res.status(404).json({ success: false, message: 'Brand not found' });
     }
-    res.status(200).json(result[0]);
+    res.status(200).json({ success: true, data: result[0] }); // Updated response
   });
 };
 
@@ -62,7 +62,7 @@ export const updateBrand = (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Brand not found' });
     }
-    res.status(200).json({ message: 'Brand updated successfully' });
+    res.status(200).json({ success: true, message: 'Brand updated successfully' });
   });
 };
 
@@ -78,6 +78,6 @@ export const deleteBrand = (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Brand not found' });
     }
-    res.status(200).json({ message: 'Brand deleted successfully' });
+    res.status(200).json({ success: true, message: 'Brand deleted successfully' });
   });
 };
