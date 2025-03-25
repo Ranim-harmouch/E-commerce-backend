@@ -4,6 +4,7 @@ import axios from "axios";
 import multer from "multer";
 import Product from "../models/Product.js";
 import dotenv from "dotenv";
+import FormData from "form-data";
 
 dotenv.config();
 
@@ -117,11 +118,6 @@ export const updateProduct = (req, res) => {
         res.status(200).json({ data: null, message: "Product updated successfully", error: null });
     });
 };
-
-
-
-
-
 
 
 
