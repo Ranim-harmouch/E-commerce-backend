@@ -1,3 +1,10 @@
+  
+
+import productRoutes from './routes/productRoutes.js';
+
+
+const app = express();
+
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -29,6 +36,8 @@ app.use(
 );
 
 
+
+
 app.get("/health", (_, res) => {
   res.send("Still alive!");
 });
@@ -37,6 +46,7 @@ app.use("/api/orders", orderRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/reviews', reviewRoutes);
 
+app.use('/api/products', productRoutes);
 app.use('/api/shipments', orderShipmentsRoutes);
 
 app.use("/users", authRoutes);
