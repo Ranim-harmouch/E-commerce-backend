@@ -103,7 +103,6 @@ export const deleteProduct = (req, res) => {
 
 
 //update
-
 export const updateProduct = (req, res) => {
     const { name, brandId, description, quantity, price, color, discount, isNew, category } = req.body;
     const productId = parseInt(req.params.id, 10);
@@ -115,10 +114,23 @@ export const updateProduct = (req, res) => {
         if (!success) {
             return res.status(404).json({ data: null, message: "Product not found or not updated", error: null });
         }
-        res.status(200).json({ data: null, message: "Product updated successfully", error: null });
+
+        // If an image is uploaded, update the image as well
+        if (req.file) {
+            uploadImageToImgBB(req.file, (uploadError, imageUrl) => {
+                if (uploadError) {
+                    return res.status(500).json({ data: null, message: "Error uploading image", error: uploadError.message });
+                }
+
+                Product.saveImage(productId, imageUrl, (imgError) => {
+                    if (imgError) {
+                        return res.status(500).json({ data: null, message: "Error updating image", error: imgError.message });
+                    }
+                    res.status(200).json({ data: null, message: "Product and image updated successfully", error: null });
+                });
+            });
+        } else {
+            res.status(200).json({ data: null, message: "Product updated successfully", error: null });
+        }
     });
 };
-
-
-
-
