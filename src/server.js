@@ -4,6 +4,8 @@ import productRoutes from './routes/productRoutes.js';
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import dotenv from "dotenv";
+import orderShipmentAdressRoutes from "./routes/orderShipmentAdress.js";
 import orderRoutes from "./routes/orderRoutes.js"; 
 import brandRoutes from './routes/brandRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
@@ -30,8 +32,7 @@ app.use(cookieParser());
 app.get("/health", (_, res) => {
   res.send("Still alive!");
 });
-
-// Routes
+app.use("/api/ordershipment", orderShipmentAdressRoutes);
 app.use("/api/orders", orderRoutes); 
 app.use('/api/brands', brandRoutes);
 app.use('/api/reviews', reviewRoutes);
