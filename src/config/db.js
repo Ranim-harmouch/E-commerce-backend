@@ -1,11 +1,15 @@
+
 // src/config/db.js
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config();  
+
+
 
 // Create a connection pool
 const pool = mysql.createPool({
+
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -27,5 +31,6 @@ pool.getConnection((err, connection) => {
 });
 
 // Export the pool for queries
+
 export default pool;
 
