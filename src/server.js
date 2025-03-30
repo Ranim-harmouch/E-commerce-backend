@@ -16,6 +16,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 
+import contactRoutes from "./routes/contactRoutes.js";
 
 dotenv.config();
 
@@ -42,7 +43,7 @@ app.use('/api/shipments', orderShipmentsRoutes);
 
 app.use("/users", authRoutes);
 app.use("/admin", userRoutes);
-
+app.use("/api/contact", contactRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
