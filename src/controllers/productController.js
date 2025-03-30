@@ -24,9 +24,11 @@ const uploadImageToImgBB = (file, callback) => {
             headers: { "Content-Type": "multipart/form-data" },
         })
         .then((response) => {
+            console.log("ImgBB Response:", response.data); // Debugging
             callback(null, response.data.data.url);
         })
         .catch((error) => {
+            console.error("ImgBB Upload Error:", error.response?.data || error.message);
             callback(new Error("Image upload failed"), null);
         });
 };
