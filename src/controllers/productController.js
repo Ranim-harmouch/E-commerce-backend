@@ -134,3 +134,6 @@ export const updateProduct = (req, res) => {
         }
     });
 };
+
+
+
